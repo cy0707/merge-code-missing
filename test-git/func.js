@@ -5,3 +5,8 @@ console.log('let start--')
 function base() {
     console.log('base func')
 }
+
+// 在test分支新建fun1
+function testFun1() {
+    console.log('testFun1')
+}
