@@ -6,3 +6,8 @@ function base() {
     console.log('base func -dev分支修改base')
 }
 
+// 在dev分支新建fun1
+function devFun1() {
+    console.log('在dev分支新建fun1')
+}
+
