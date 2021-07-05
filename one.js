@@ -10,3 +10,7 @@ function base() {
 function dev1() {
     console.log('dev1')
 }
+
+function dev2() {
+    console.log('dev2')
+}
