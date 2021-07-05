@@ -11,3 +11,8 @@ function base() {
 function branch1() {
     console.log('branch1')
 }
+
+// 新增 func branch2
+function branch2() {
+    console.log('branch2')
+}
