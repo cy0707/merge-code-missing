@@ -3,10 +3,17 @@ console.log('let start--')
 
 // 新建base func
 function base() {
-    console.log('base func')
+console.log('base func -dev分支修改base')
 }
 
 // 在test分支新建fun1
 function testFun1() {
     console.log('testFun1')
 }
+
+
+// 在dev分支新建fun1
+function devFun1() {
+    console.log('在dev分支新建fun1')
+}
+
