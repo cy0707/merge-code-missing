@@ -11,3 +11,7 @@ function devFun1() {
     console.log('在dev分支新建fun1')
 }
 
+// 在dev分支新建fun2
+function devFun1() {
+    console.log('在dev分支新建fun2')
+}
