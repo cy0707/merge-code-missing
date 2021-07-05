@@ -5,3 +5,8 @@ console.log('master 1')
 function base() {
     console.log('base 1')
 }
+
+// 新增 func branch1
+function branch1() {
+    console.log('branch1')
+}
