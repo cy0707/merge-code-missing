@@ -6,3 +6,7 @@ console.log('master 1')
 function base() {
     console.log('base 2')
 }
+
+function dev1() {
+    console.log('dev1')
+}
