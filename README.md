@@ -45,47 +45,50 @@
 只能跟着截图和文字描述进行复现，虽然没有复现出跟博主同样的情况，但是却
 复现了另一种代码覆盖的情况（three-way merge）
 
+### 具体的操作步骤如下：
+
 1. 在master分支，进行了提交one.js(5f8f865)
-2. 从master拉取新分支dev, 在one.js新增如下代码(0376713)
+2. 从master拉取新分支dev, 在one.js做了如下操作(0376713)
 ```js
-// 新增base fub
+// 新增base fub 0376713（提交1）
 function base() {
     console.log('base 1')
 }
-```
-更新base d2e53df
-```js
 function base() {
-    console.log('base 2')
+  // 更新base d2e53df （提交2）
+  console.log('base 2')
 }
-```
-新增dev1方法 5b44c13
-```js
-// 新增dev1方法
+// 新增dev1方法 5b44c13 （提交3）
 function dev1() {
     console.log('dev1')
 }
 ```
 3. 从dev分支（0376713）拉取branch1分支，在one.js新增如下代(69c7985)
+
 ```js
 // 新增 func branch1
 function branch1() {
     console.log('branch1')
 }
 ```
-4. 在branch1分支合并dev分支，根据three-ways
 
-**整个提交gitgraph**
+4. 在branch1分支合并dev分支
+
+我们此时查看git graph的记录
 ![整个提交gitgraph](./src/graph.png)
 
-**base--dev分支0376713**
-![base--dev分支0376713](./src/base.png)
 
-**ours--branch1的69c7985**
-![ours--branch1的69c7985](./src/ours.png)
+我们可以很容易看出ours对应commitId-69c7985,theirs对应commitId-5b44c13, 这两个提交的最近公共祖先即base对应commitId-0376713
 
-**theirs--dev分支5b44c13**
-![theirs--dev分支5b44c13](./src/theirs.png)
+**在查找两个合并commit的公共祖先的时候，如果分支比较复杂，不能一眼看出来的话，可以采取以下命令，查找公共祖先base**
+
+```js
+git merge-base 69c7985 5b44c13
+```
+
+可以根据下图，很容易看出，我们可以的过程
+![merge](./src/merge1.png)
+
 
 根据three-ways合并原理，合并的时候，会出现冲突因为theirs和ours修改了同一个地方, 没法采用fast-forword方式，同时会产生一个merge-commit-id, 记录此时commit-id是由那两个commit合并
 
@@ -95,68 +98,24 @@ CONFLICT (content): Merge conflict in one.js
 Automatic merge failed; fix conflicts and then commit the result.
 ```
 
-![merge](./src/merge.png)
-
-在解决冲突之后，我们代码长这样，摒弃了dev分支的code, 使用的branch1分支
-![merge](./src/merge1.png)
-
-在合并之后，我们在branch1分支，增加--b005aee
+在合并之后，我们在branch1分支
 ```js
-// 新增 func branch2
+// 新增 func branch2 增加--b005aee
 function branch2() {
     console.log('branch2')
 }
 ```
 
-同时在dev分支，新增bf5460e
+同时在dev分支
 ```js
+// 新增bf5460e
 function dev2() {
     console.log('dev2')
 }
 ```
 
-再把branch1分支合并到dev分支，产生了merge-commit-id(d5943f3)
-此时我们发现我的dev分支，代码被覆盖了。为什么呢？
-```js
-// 本来dev的base方法是这样，合并branch1的代码之后，
-function base() {
-    console.log('base 2')
-}
-// 合并之后--直接采用了branch1的分支code
-function base() {
-    console.log('base 1')
-}
-```
+再把branch1分支合并到dev分支，产生了merge-commit-id(d5943f3), 此时我们发现我的dev分支，代码被覆盖了。为什么呢？
+我们看一下合并过程，就很容易看出合并代码丢失的过程，其实也不是丢失，只是在第一次合并的时候我们丢掉了dev的代码，
+第二次合并，就自动抛弃了dev的code了，导致dev上的code丢失了，我们可以根据三路合并原理，很容易看出问题所在。
 
-**查找base的时候，如果分支比较复杂，可以使用**
-
-```js
-git merge-base bf5460e7 b005aee5
-```
-
-**base--dev分支5b44c13**
-![base--dev分支5b44c13](./src/base2.png)
-
-**ours--dev的bf5460e7**
-![ours--branch1的bf5460e7](./src/dev2.png)
-
-**theirs--branch1分支b005aee5**
-![theirs--dev分支b005aee5](./src/branch2.png)
-
-
-我们可以发现，根据three-ways,只有branch1的跟base 和ours的代码不同，合并的时候直接由branch1的分支直接覆盖。带着本来存在dev
-分支的代码被覆盖
-
-```js
-//base和ours的
-function base () {
-  console.log(2)
-}
-// 而theirs
-function base () {
-  console.log(1)
-}
-```
-
-merge之后
-![合并之后](./src/merge2.png)
+![merge](./src/merge2.png)
